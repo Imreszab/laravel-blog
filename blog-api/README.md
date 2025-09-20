@@ -57,8 +57,7 @@ This API uses Laravel Sanctum for authentication. Register or login to receive a
 | DELETE | /api/posts/{id}       | Delete a post (owner only)     |
 | POST   | /api/comments         | Create a comment               |
 | PUT    | /api/comments/{id}    | Update a comment (owner only)  |
-| DELETE | /api/comments/{id}    | Delete a comment (owner or     |
-                                 |              post  owner only) |
+| DELETE | /api/comments/{id}    | Delete a comment (owner or post  owner only) |
 
 ## Example Usage
 

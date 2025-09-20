@@ -1,2 +1,2 @@
 # laravel-blog
-laravel blog API
+For the API documentation check the README.md inside the blog-api folder.
