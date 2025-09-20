@@ -1,61 +1,449 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Laravel Blog API
 
-## About Laravel
+This is a RESTful API for a blog application built with Laravel. It supports user authentication, blog posts, and comments.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Setup
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Clone the repository**
+2. **Install dependencies**
+	```sh
+	composer install
+	```
+3. **Copy and configure your environment file**
+	```sh
+	cp .env.example .env
+	# Edit .env as needed (DB, mail, etc.)
+	```
+4. **Generate application key**
+	```sh
+	php artisan key:generate
+	```
+5. **Run migrations and seeders**
+	```sh
+	php artisan migrate --seed
+	```
+6. **(Optional) Run the development server**
+	```sh
+	php artisan serve
+	# or
+	php -S localhost:8001 -t public/
+	```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Authentication
 
-## Learning Laravel
+This API uses Laravel Sanctum for authentication. Register or login to receive a token, then include it in the `Authorization: Bearer <token>` header for protected routes.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## API Endpoints
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Public Endpoints
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Method | Endpoint         | Description                |
+|--------|------------------|----------------------------|
+| POST   | /api/register    | Register a new user        |
+| POST   | /api/login       | Login and get token        |
+| GET    | /api/posts       | List all posts             |
+| GET    | /api/posts/{id}  | Get a single post          |
+| GET    | /api/users       | List all users             |
 
-## Laravel Sponsors
+### Protected Endpoints (auth:sanctum)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Method | Endpoint              | Description                    |
+|--------|-----------------------|--------------------------------|
+| POST   | /api/logout           | Logout (invalidate token)      |
+| GET    | /api/user             | Get current authenticated user |
+| POST   | /api/posts            | Create a new post              |
+| PUT    | /api/posts/{id}       | Update a post (owner only)     |
+| DELETE | /api/posts/{id}       | Delete a post (owner only)     |
+| POST   | /api/comments         | Create a comment               |
+| PUT    | /api/comments/{id}    | Update a comment (owner only)  |
+| DELETE | /api/comments/{id}    | Delete a comment (owner or     |
+                                 |              post  owner only) |
 
-### Premium Partners
+## Example Usage
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Register:**
+```http
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## API Endpoints & Definitions
 
-## Code of Conduct
+### Public Endpoints
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Register
+**POST /api/register**
 
-## Security Vulnerabilities
+**Request Body:**
+```
+name: string (required)
+email: string (required, unique)
+password: string (required, min:8)
+password_confirmation: string (required, same as password)
+```
+**Example:**
+```json
+{
+	"name": "John Doe",
+	"email": "john@example.com",
+	"password": "password",
+	"password_confirmation": "password"
+}
+```
+**Response:**
+```json
+{
+	"user": {
+		"id": 1,
+		"name": "John Doe",
+		"email": "john@example.com",
+		"created_at": "2025-09-20T12:00:00.000000Z",
+		"updated_at": "2025-09-20T12:00:00.000000Z"
+	},
+	"token": "eyJ0eXAiOiJKV1QiLCJhbGci..."
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Login
+**POST /api/login**
 
-## License
+**Request Body:**
+```
+email: string (required)
+password: string (required)
+```
+**Example:**
+```json
+{
+	"email": "john@example.com",
+	"password": "password"
+}
+```
+**Response:**
+```json
+{
+	"user": {
+		"id": 1,
+		"name": "John Doe",
+		"email": "john@example.com",
+		"created_at": "2025-09-20T12:00:00.000000Z",
+		"updated_at": "2025-09-20T12:00:00.000000Z"
+	},
+	"token": "eyJ0eXAiOiJKV1QiLCJhbGci..."
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+#### List All Posts
+**GET /api/posts**
+
+**Response:**
+```json
+[
+	{
+		"id": "1",
+		"attributes": {
+			"title": "First Post",
+			"content": "This is the first post.",
+			"created_at": "2025-09-20T12:00:00.000000Z",
+			"updated_at": "2025-09-20T12:00:00.000000Z"
+		},
+		"relationships": {
+			"user": {
+				"id": 1,
+				"user name": "John Doe"
+			},
+			"comments": [
+				{
+					"id": "10",
+					"attributes": {
+						"comment": "Nice post!",
+						"created_at": "2025-09-20T12:10:00.000000Z",
+						"updated_at": "2025-09-20T12:10:00.000000Z"
+					},
+					"relationships": {
+						"user": {
+							"id": 2,
+							"name": "Jane Smith"
+						},
+						"post": {
+							"id": 1,
+							"title": "First Post"
+						}
+					}
+				}
+			]
+		}
+	}
+]
+```
+
+#### Get Single Post
+**GET /api/posts/{id}**
+
+**Response:**
+```json
+{
+	"id": "1",
+	"attributes": {
+		"title": "First Post",
+		"content": "This is the first post.",
+		"created_at": "2025-09-20T12:00:00.000000Z",
+		"updated_at": "2025-09-20T12:00:00.000000Z"
+	},
+	"relationships": {
+		"user": {
+			"id": 1,
+			"user name": "John Doe"
+		},
+		"comments": [
+			{
+				"id": "10",
+				"attributes": {
+					"comment": "Nice post!",
+					"created_at": "2025-09-20T12:10:00.000000Z",
+					"updated_at": "2025-09-20T12:10:00.000000Z"
+				},
+				"relationships": {
+					"user": {
+						"id": 2,
+						"name": "Jane Smith"
+					},
+					"post": {
+						"id": 1,
+						"title": "First Post"
+					}
+				}
+			}
+		]
+	}
+}
+```
+
+#### List All Users
+**GET /api/users**
+
+**Response:**
+```json
+[
+	{
+		"id": 1,
+		"name": "John Doe",
+		"email": "john@example.com",
+		"created_at": "2025-09-20T12:00:00.000000Z",
+		"updated_at": "2025-09-20T12:00:00.000000Z"
+	},
+	{
+		"id": 2,
+		"name": "Jane Smith",
+		"email": "jane@example.com",
+		"created_at": "2025-09-20T12:10:00.000000Z",
+		"updated_at": "2025-09-20T12:10:00.000000Z"
+	}
+]
+```
+
+### Protected Endpoints (Require Bearer Token)
+
+#### Logout
+**POST /api/logout**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Response:**
+```json
+{
+	"message": "Logged out successfully"
+}
+```
+
+#### Get Authenticated User
+**GET /api/user**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Response:**
+```json
+{
+	"id": 1,
+	"name": "John Doe",
+	"email": "john@example.com",
+	"created_at": "2025-09-20T12:00:00.000000Z",
+	"updated_at": "2025-09-20T12:00:00.000000Z"
+}
+```
+
+#### Create Post
+**POST /api/posts**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Request Body:**
+```
+title: string (required)
+content: string (required)
+```
+**Example:**
+```json
+{
+	"title": "New Post",
+	"content": "Post content goes here."
+}
+```
+**Response:**
+```json
+{
+	"id": 3,
+	"user_id": 1,
+	"title": "New Post",
+	"content": "Post content goes here.",
+	"created_at": "2025-09-20T12:20:00.000000Z",
+	"updated_at": "2025-09-20T12:20:00.000000Z"
+}
+```
+
+#### Update Post
+**PUT /api/posts/{id}**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Request Body:**
+```
+title: string (optional)
+content: string (optional)
+```
+**Example:**
+```json
+{
+	"title": "Updated Title",
+	"content": "Updated content."
+}
+```
+**Response:**
+```json
+{
+	"id": 3,
+	"user_id": 1,
+	"title": "Updated Title",
+	"content": "Updated content.",
+	"created_at": "2025-09-20T12:20:00.000000Z",
+	"updated_at": "2025-09-20T12:25:00.000000Z"
+}
+```
+
+#### Delete Post
+**DELETE /api/posts/{id}**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Response:**
+```json
+{
+	"message": "Successfully deleted the Post"
+}
+```
+
+
+#### Create Comment
+**POST /api/comments**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Request Body:**
+```
+post_id: integer (required)
+comment: string (required)
+```
+**Example:**
+```json
+{
+	"post_id": 1,
+	"comment": "This is a comment."
+}
+```
+**Response:**
+```json
+{
+	"id": "10",
+	"attributes": {
+		"comment": "This is a comment.",
+		"created_at": "2025-09-20T12:30:00.000000Z",
+		"updated_at": "2025-09-20T12:30:00.000000Z"
+	},
+	"relationships": {
+		"user": {
+			"id": 1,
+			"name": "John Doe"
+		},
+		"post": {
+			"id": 1,
+			"title": "First Post"
+		}
+	}
+}
+```
+
+
+#### Update Comment
+**PUT /api/comments/{id}**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Request Body:**
+```
+comment: string (required)
+```
+**Example:**
+```json
+{
+	"comment": "Updated comment."
+}
+```
+**Response:**
+```json
+{
+	"id": "10",
+	"attributes": {
+		"comment": "Updated comment.",
+		"created_at": "2025-09-20T12:30:00.000000Z",
+		"updated_at": "2025-09-20T12:35:00.000000Z"
+	},
+	"relationships": {
+		"user": {
+			"id": 1,
+			"name": "John Doe"
+		},
+		"post": {
+			"id": 1,
+			"title": "First Post"
+		}
+	}
+}
+```
+
+#### Delete Comment
+**DELETE /api/comments/{id}**
+
+**Header:**
+```
+Authorization: Bearer <token>
+```
+**Response:**
+```json
+{
+	"message": "Successfully deleted the Comment"
+}
+```
