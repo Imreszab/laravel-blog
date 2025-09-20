@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\PostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +19,7 @@ class PostController extends Controller
         );
     }
 
-   public function store(StorePostRequest $request) {
+   public function store(PostRequest $request) {
        $request->validated();
 
        $post = Post::create([
@@ -36,10 +36,11 @@ class PostController extends Controller
        return new PostResource($post);
    }
 
-   public function update(Request $request, Post $post) {
+   public function update(PostRequest $request, Post $post) {
        if($this->isNotAuthorized($post)) {
          return $this->isNotAuthorized($post);
        }else {
+        $request->validated();
         $post->update($request->all());
        
         return new PostResource($post);
