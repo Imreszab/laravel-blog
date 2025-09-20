@@ -61,15 +61,7 @@ This API uses Laravel Sanctum for authentication. Register or login to receive a
 
 ## Example Usage
 
-**Register:**
-```http
-
-
-## API Endpoints & Definitions
-
-### Public Endpoints
-
-#### Register
+###Register:
 **POST /api/register**
 
 **Request Body:**
