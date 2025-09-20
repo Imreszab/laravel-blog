@@ -37,31 +37,29 @@ class PostController extends Controller
    }
 
    public function update(PostRequest $request, Post $post) {
-       if($this->isNotAuthorized($post)) {
-         return $this->isNotAuthorized($post);
-       }else {
+       if($this->isOwner($post)) {
+         return $this->isOwner($post);
+       }
+
         $request->validated();
         $post->update($request->all());
-       
+        
         return new PostResource($post);
-
-       }
    }
 
    public function destroy (Post $post) {
 
-        if($this->isNotAuthorized($post)) {
-            return $this->isNotAuthorized($post);
-        }else {
-            $post->delete();
-       
-            return $this->success('', 'Successfully deleted the Post', 200);
-
+        if($this->isOwner($post)) {
+            return $this->isOwner($post);
         }
+        $post->delete();
+    
+        return $this->success('', 'Successfully deleted the Post', 200);
+
    }
 
 
-   public function isNotAuthorized($post) {
+   public function isOwner($post) {
         if(Auth::user()->id !== $post->user_id) {
             return $this->error('', 'You are not authorized to make this request', 403);
         }
