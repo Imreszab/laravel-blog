@@ -25,7 +25,7 @@ class PostResource extends JsonResource
             'relationships' => [
                 'user' => [
                     'id' => $this->user_id,
-                    'user name' => $this->user->name
+                    'user_name' => $this->user->name
                 ],
                 'comments' => CommentResource::collection($this->comments)
             ]

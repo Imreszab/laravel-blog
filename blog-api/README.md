@@ -141,7 +141,7 @@ password: string (required)
 		"relationships": {
 			"user": {
 				"id": 1,
-				"user name": "John Doe"
+				"user_name": "John Doe"
 			},
 			"comments": [
 				{
@@ -184,7 +184,7 @@ password: string (required)
 	"relationships": {
 		"user": {
 			"id": 1,
-			"user name": "John Doe"
+			"user_name": "John Doe"
 		},
 		"comments": [
 			{
